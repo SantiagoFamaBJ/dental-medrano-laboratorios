@@ -5,9 +5,10 @@ import type { Categoria } from "@/lib/types";
 interface FooterProps {
   categorias: Categoria[];
   logoUrl?: string | null;
+  email?: string;
 }
 
-export default function Footer({ categorias, logoUrl }: FooterProps) {
+export default function Footer({ categorias, logoUrl, email = "info@dental-medrano.com.ar" }: FooterProps) {
   const year = new Date().getFullYear();
   return (
     <footer className="bg-ink text-mist-200">
@@ -59,14 +60,13 @@ export default function Footer({ categorias, logoUrl }: FooterProps) {
               <li><Link href="/#marcas" className="text-sm text-mist-200 hover:text-white">Marcas</Link></li>
               <li><Link href="/#tipo-laboratorio" className="text-sm text-mist-200 hover:text-white">Tipo de laboratorio</Link></li>
               <li><Link href="/contacto" className="text-sm text-mist-200 hover:text-white">Contacto</Link></li>
-              <li><Link href="/admin" className="text-sm text-mist-400 hover:text-white">Panel interno</Link></li>
             </ul>
           </div>
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-mist-300">Contacto</p>
             <ul className="mt-4 space-y-3 text-sm text-mist-200">
-              <li>info@dental-medrano.com.ar</li>
+              <li>{email}</li>
               <li>Buenos Aires, Argentina</li>
               <li>Atención a laboratorios de todo el país</li>
             </ul>

@@ -49,7 +49,7 @@ export default function CartDrawer({ open, onClose, whatsappNumber }: CartDrawer
             <div className="flex h-full flex-col items-center justify-center text-center">
               <ShoppingCart className="h-10 w-10 text-mist-300" />
               <p className="mt-4 text-sm text-graphite-500">
-                Todavía no agregaste productos. Sumá los que te interesen y mandá una sola consulta por todos.
+                Todavia no agregaste productos. Suma los que te interesen y manda una sola consulta por todos.
               </p>
             </div>
           ) : (
@@ -74,6 +74,9 @@ export default function CartDrawer({ open, onClose, whatsappNumber }: CartDrawer
                       <p className="truncate text-sm font-semibold text-ink">{item.nombre}</p>
                       {item.variante && (
                         <p className="truncate text-xs text-graphite-500">Tonalidad/medida: {item.variante}</p>
+                      )}
+                      {item.sku && (
+                        <p className="truncate text-xs text-graphite-400">SKU: {item.sku}</p>
                       )}
                     </div>
                     <button

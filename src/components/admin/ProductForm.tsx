@@ -4,7 +4,7 @@ import { useEffect, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import type { Categoria, Marca, Producto } from "@/lib/types";
+import type { Categoria, Marca, Producto, VarianteMatriz } from "@/lib/types";
 import ImageUploader from "@/components/ImageUploader";
 
 interface ProductFormProps {
@@ -33,6 +33,15 @@ function arrayToLines(arr: string[] | null | undefined): string {
 
 const TECNOLOGIAS = ["analogico", "mixto", "digital"];
 const TIPOS_LABORATORIO = ["tradicional", "mixto", "digital"];
+const TIPOS_CATALOGO = [
+  { value: "producto", label: "Producto" },
+  { value: "linea", label: "Linea" },
+  { value: "coleccion", label: "Coleccion" },
+];
+
+function nuevaVariante(): VarianteMatriz {
+  return { etiqueta: "", sku: "", tipo: "", translucidez: "", tono: "", medida: "" };
+}
 
 export default function ProductForm({ producto }: ProductFormProps) {
   const router = useRouter();
@@ -42,6 +51,9 @@ export default function ProductForm({ producto }: ProductFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [imagen, setImagen] = useState<string | null>(producto?.imagen || null);
   const [tipoLab, setTipoLab] = useState<string[]>(producto?.tipo_laboratorio || []);
+  const [variantesMatriz, setVariantesMatriz] = useState<VarianteMatriz[]>(
+    producto?.variantes_matriz?.length ? producto.variantes_matriz : []
+  );
 
   useEffect(() => {
     supabase.from("labs_categories").select("*").order("orden").then(({ data }) => setCategorias(data || []));
@@ -68,6 +80,9 @@ export default function ProductForm({ producto }: ProductFormProps) {
       beneficios: linesToArray(String(form.get("beneficios") || "")),
       caracteristicas: linesToArray(String(form.get("caracteristicas") || "")),
       variantes: linesToArray(String(form.get("variantes") || "")),
+      sku: String(form.get("sku") || "") || null,
+      tipo: String(form.get("tipo") || "producto"),
+      variantes_matriz: variantesMatriz.filter((v) => v.etiqueta.trim()),
       tecnologia: String(form.get("tecnologia") || "") || null,
       tipo_laboratorio: tipoLab,
       tags: linesToArray(String(form.get("tags") || "")),
@@ -93,7 +108,7 @@ export default function ProductForm({ producto }: ProductFormProps) {
 
   async function handleDelete() {
     if (!producto) return;
-    if (!confirm(`¿Eliminar "${producto.nombre}"? Esta acción no se puede deshacer.`)) return;
+    if (!confirm(`Eliminar "${producto.nombre}"? Esta accion no se puede deshacer.`)) return;
     await supabase.from("labs_products").delete().eq("id", producto.id);
     router.push("/admin/productos");
     router.refresh();
@@ -101,6 +116,14 @@ export default function ProductForm({ producto }: ProductFormProps) {
 
   function toggleTipoLab(tipo: string) {
     setTipoLab((prev) => (prev.includes(tipo) ? prev.filter((t) => t !== tipo) : [...prev, tipo]));
+  }
+
+  function actualizarVariante(idx: number, campo: keyof VarianteMatriz, valor: string) {
+    setVariantesMatriz((prev) => prev.map((v, i) => (i === idx ? { ...v, [campo]: valor } : v)));
+  }
+
+  function eliminarVariante(idx: number) {
+    setVariantesMatriz((prev) => prev.filter((_, i) => i !== idx));
   }
 
   return (
@@ -127,24 +150,43 @@ export default function ProductForm({ producto }: ProductFormProps) {
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-graphite-700">Categoría</label>
+            <label className="mb-1.5 block text-sm font-medium text-graphite-700">Categoria</label>
             <select
               name="categoria_slug"
               defaultValue={producto?.categoria_slug || ""}
               required
               className="w-full rounded-xl border border-mist-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand"
             >
-              <option value="">Seleccioná una categoría</option>
+              <option value="">Selecciona una categoria</option>
               {categorias.map((c) => (
                 <option key={c.slug} value={c.slug}>{c.nombre}</option>
               ))}
             </select>
           </div>
 
-          <TextField label="Subcategoría / línea" name="subcategoria" defaultValue={producto?.subcategoria} />
+          <TextField label="Subcategoria / linea" name="subcategoria" defaultValue={producto?.subcategoria} />
+
+          <TextField
+            label="SKU (codigo de producto)"
+            name="sku"
+            defaultValue={producto?.sku}
+          />
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-graphite-700">Tecnología</label>
+            <label className="mb-1.5 block text-sm font-medium text-graphite-700">Tipo de ficha</label>
+            <select
+              name="tipo"
+              defaultValue={producto?.tipo || "producto"}
+              className="w-full rounded-xl border border-mist-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand"
+            >
+              {TIPOS_CATALOGO.map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-graphite-700">Tecnologia</label>
             <select
               name="tecnologia"
               defaultValue={producto?.tecnologia || ""}
@@ -177,35 +219,88 @@ export default function ProductForm({ producto }: ProductFormProps) {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-5">
-          <TextArea label="Descripción corta" name="descripcion_corta" defaultValue={producto?.descripcion_corta} rows={2} />
-          <TextArea label="Descripción completa" name="descripcion_completa" defaultValue={producto?.descripcion_completa} rows={4} />
+          <TextArea label="Descripcion corta" name="descripcion_corta" defaultValue={producto?.descripcion_corta} rows={2} />
+          <TextArea label="Descripcion completa" name="descripcion_completa" defaultValue={producto?.descripcion_completa} rows={4} />
           <TextArea
-            label="Aplicaciones (una por línea)"
+            label="Aplicaciones (una por linea)"
             name="aplicaciones"
             defaultValue={arrayToLines(producto?.aplicaciones)}
             rows={3}
           />
           <TextArea
-            label="Beneficios (uno por línea)"
+            label="Beneficios (uno por linea)"
             name="beneficios"
             defaultValue={arrayToLines(producto?.beneficios)}
             rows={3}
           />
           <TextArea
-            label="Características (una por línea)"
+            label="Caracteristicas (una por linea)"
             name="caracteristicas"
             defaultValue={arrayToLines(producto?.caracteristicas)}
             rows={3}
           />
           <TextArea
-            label="Variantes / presentaciones (una por línea)"
+            label="Variantes / presentaciones simples (una por linea, sin SKU propio)"
             name="variantes"
             defaultValue={arrayToLines(producto?.variantes)}
             rows={2}
           />
-          <TextArea label="Tags de búsqueda (uno por línea)" name="tags" defaultValue={arrayToLines(producto?.tags)} rows={2} />
+
+          <div>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="block text-sm font-medium text-graphite-700">
+                Variantes con SKU propio (tipo / translucidez / tono / medida)
+              </label>
+              <button
+                type="button"
+                onClick={() => setVariantesMatriz((prev) => [...prev, nuevaVariante()])}
+                className="text-xs font-semibold text-brand hover:underline"
+              >
+                + Agregar variante
+              </button>
+            </div>
+            <p className="mb-3 text-xs text-graphite-500">
+              Usa esto solo si el producto tiene combinaciones reales con SKU propio (ej. BRILLIANT Crios: tono +
+              tipo + translucidez + medida). Deja vacio el campo que no aplique.
+            </p>
+            {variantesMatriz.length === 0 && (
+              <p className="text-xs text-graphite-400">No hay variantes con SKU cargadas.</p>
+            )}
+            <div className="space-y-3">
+              {variantesMatriz.map((v, idx) => (
+                <div key={idx} className="rounded-xl border border-mist-200 p-3">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    <MiniField
+                      placeholder="Etiqueta (ej: A3 . Anterior . HT . 14mm)"
+                      value={v.etiqueta}
+                      onChange={(val) => actualizarVariante(idx, "etiqueta", val)}
+                      className="col-span-2 sm:col-span-3"
+                    />
+                    <MiniField placeholder="SKU" value={v.sku || ""} onChange={(val) => actualizarVariante(idx, "sku", val)} />
+                    <MiniField placeholder="Tipo" value={v.tipo || ""} onChange={(val) => actualizarVariante(idx, "tipo", val)} />
+                    <MiniField
+                      placeholder="Translucidez"
+                      value={v.translucidez || ""}
+                      onChange={(val) => actualizarVariante(idx, "translucidez", val)}
+                    />
+                    <MiniField placeholder="Tono" value={v.tono || ""} onChange={(val) => actualizarVariante(idx, "tono", val)} />
+                    <MiniField placeholder="Medida" value={v.medida || ""} onChange={(val) => actualizarVariante(idx, "medida", val)} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => eliminarVariante(idx)}
+                    className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:underline"
+                  >
+                    <Trash2 className="h-3 w-3" /> Quitar esta variante
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <TextArea label="Tags de busqueda (uno por linea)" name="tags" defaultValue={arrayToLines(producto?.tags)} rows={2} />
           <TextArea
-            label="Badges (uno por línea, ej: Nuevo, Destacado, CAD/CAM)"
+            label="Badges (uno por linea, ej: Nuevo, Destacado, CAD/CAM)"
             name="badges"
             defaultValue={arrayToLines(producto?.badges)}
             rows={2}
@@ -261,6 +356,27 @@ function TextField({ label, name, defaultValue, required }: { label: string; nam
         className="w-full rounded-xl border border-mist-300 px-4 py-2.5 text-sm outline-none focus:border-brand"
       />
     </div>
+  );
+}
+
+function MiniField({
+  placeholder,
+  value,
+  onChange,
+  className = "",
+}: {
+  placeholder: string;
+  value: string;
+  onChange: (val: string) => void;
+  className?: string;
+}) {
+  return (
+    <input
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      className={`rounded-lg border border-mist-300 px-3 py-2 text-xs outline-none focus:border-brand ${className}`}
+    />
   );
 }
 

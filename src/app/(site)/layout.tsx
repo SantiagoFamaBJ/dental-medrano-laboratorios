@@ -16,7 +16,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <CartProvider>
       <Header categorias={categorias} logoUrl={logoUrl} whatsappNumber={numero} navContent={content} />
       {children}
-      <Footer categorias={categorias} logoUrl={logoUrl} />
+      <Footer categorias={categorias} logoUrl={logoUrl} email={content.contacto_email} />
       <WhatsAppButton numero={numero} />
     </CartProvider>
   );

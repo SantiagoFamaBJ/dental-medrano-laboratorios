@@ -11,8 +11,8 @@ const BADGE_STYLES: Record<string, string> = {
   Nuevo: "bg-cyan-accent/15 text-cyan-accent",
   Destacado: "bg-brand/10 text-brand",
   "CAD/CAM": "bg-ink/5 text-ink",
-  "Impresión 3D": "bg-ink/5 text-ink",
-  "Alta estética": "bg-brand/10 text-brand",
+  "Impresion 3D": "bg-ink/5 text-ink",
+  "Alta estetica": "bg-brand/10 text-brand",
 };
 
 export default function ProductCard({ producto }: { producto: Producto }) {
@@ -45,9 +45,14 @@ export default function ProductCard({ producto }: { producto: Producto }) {
             <span className="font-heading text-2xl font-bold text-mist-300">DM</span>
           </div>
         )}
-        {producto.badges?.length > 0 && (
+        {(producto.badges?.length > 0 || producto.tipo !== "producto") && (
           <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
-            {producto.badges.slice(0, 2).map((badge) => (
+            {producto.tipo !== "producto" && (
+              <span className="rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-graphite-700 backdrop-blur">
+                {producto.tipo === "linea" ? "Linea" : "Coleccion"}
+              </span>
+            )}
+            {producto.badges?.slice(0, 2).map((badge) => (
               <span
                 key={badge}
                 className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide backdrop-blur ${

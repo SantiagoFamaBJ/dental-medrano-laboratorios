@@ -91,9 +91,14 @@ export default async function ProductoPage({ params }: { params: { slug: string 
           </div>
 
           <div>
-            {producto.badges?.length > 0 && (
+            {(producto.badges?.length > 0 || producto.tipo !== "producto") && (
               <div className="mb-4 flex flex-wrap gap-2">
-                {producto.badges.map((b) => (
+                {producto.tipo !== "producto" && (
+                  <span className="rounded-full bg-ink/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-graphite-700">
+                    {producto.tipo === "linea" ? "Linea" : "Coleccion"}
+                  </span>
+                )}
+                {producto.badges?.map((b) => (
                   <span key={b} className="rounded-full bg-brand/10 px-3 py-1 text-xs font-semibold text-brand">
                     {b}
                   </span>
@@ -113,7 +118,9 @@ export default async function ProductoPage({ params }: { params: { slug: string 
               nombre={producto.nombre}
               marca={producto.marca}
               imagen={producto.imagen}
+              sku={producto.sku}
               variantes={producto.variantes}
+              variantesMatriz={producto.variantes_matriz}
               whatsappNumber={whatsappNumber}
             />
 
@@ -147,7 +154,7 @@ export default async function ProductoPage({ params }: { params: { slug: string 
 
             {producto.caracteristicas?.length > 0 && (
               <div className="mt-8">
-                <h2 className="font-heading text-sm font-bold uppercase tracking-wider text-ink">Características</h2>
+                <h2 className="font-heading text-sm font-bold uppercase tracking-wider text-ink">Caracteristicas</h2>
                 <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-graphite-600">
                   {producto.caracteristicas.map((c) => (
                     <li key={c}>{c}</li>

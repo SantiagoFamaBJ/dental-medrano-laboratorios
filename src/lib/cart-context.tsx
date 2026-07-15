@@ -8,6 +8,7 @@ export interface CartItem {
   marca: string | null;
   imagen: string | null;
   variante?: string;
+  sku?: string;
 }
 
 interface CartContextValue {
@@ -32,7 +33,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) setItems(JSON.parse(raw));
     } catch {
-      // localStorage no disponible o corrupto: seguimos con carrito vacío.
+      // localStorage no disponible o corrupto: seguimos con carrito vacio.
     }
     setHydrated(true);
   }, []);
@@ -42,11 +43,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     } catch {
-      // si falla el guardado no es crítico, el carrito sigue funcionando en memoria.
+      // si falla el guardado no es critico, el carrito sigue funcionando en memoria.
     }
   }, [items, hydrated]);
 
-  /** Agrega el producto al carrito. Si ya estaba (mismo slug), actualiza sus datos (por ej. la tonalidad/medida elegida). */
   function addItem(item: CartItem) {
     setItems((prev) => {
       const existe = prev.some((p) => p.slug === item.slug);

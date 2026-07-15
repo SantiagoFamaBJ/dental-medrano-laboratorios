@@ -7,20 +7,20 @@ import { useCart } from "@/lib/cart-context";
 
 const TIPOS_LABORATORIO = ["Tradicional", "Mixto", "Digital"];
 const INTERESES = [
-  "Cerámica y prótesis fija",
+  "Ceramica y protesis fija",
   "CAD/CAM",
-  "Impresión 3D",
-  "Prótesis removible",
+  "Impresion 3D",
+  "Protesis removible",
   "Consumibles",
   "Equipamiento",
   "Otro",
 ];
 
 const PROVINCIAS = [
-  "Buenos Aires","CABA","Catamarca","Chaco","Chubut","Córdoba","Corrientes","Entre Ríos",
-  "Formosa","Jujuy","La Pampa","La Rioja","Mendoza","Misiones","Neuquén","Río Negro",
+  "Buenos Aires","CABA","Catamarca","Chaco","Chubut","Cordoba","Corrientes","Entre Rios",
+  "Formosa","Jujuy","La Pampa","La Rioja","Mendoza","Misiones","Neuquen","Rio Negro",
   "Salta","San Juan","San Luis","Santa Cruz","Santa Fe","Santiago del Estero",
-  "Tierra del Fuego","Tucumán",
+  "Tierra del Fuego","Tucuman",
 ];
 
 interface ContactFormProps {
@@ -43,7 +43,8 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
             .map((i) => {
               const marca = i.marca ? ` (${i.marca})` : "";
               const variante = i.variante ? ` — Tonalidad/medida: ${i.variante}` : "";
-              return `- ${i.nombre}${marca}${variante}`;
+              const sku = i.sku ? ` — SKU: ${i.sku}` : "";
+              return `- ${i.nombre}${marca}${variante}${sku}`;
             })
             .join("\n")}`
         : "";
@@ -76,7 +77,7 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
     return (
       <div className="flex flex-col items-center rounded-2xl border border-mist-200 bg-white px-8 py-14 text-center">
         <CheckCircle2 className="h-12 w-12 text-brand" />
-        <h3 className="mt-4 font-heading text-xl font-bold text-ink">¡Gracias! Ya recibimos tu consulta.</h3>
+        <h3 className="mt-4 font-heading text-xl font-bold text-ink">Gracias! Ya recibimos tu consulta.</h3>
         <p className="mt-2 max-w-sm text-sm text-graphite-500">
           Un asesor de Dental Medrano se va a poner en contacto con vos a la brevedad.
         </p>
@@ -104,7 +105,8 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
                 className="flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-graphite-700 shadow-soft"
               >
                 {item.nombre}
-                {item.variante && <span className="text-graphite-400">· {item.variante}</span>}
+                {item.variante && <span className="text-graphite-400">. {item.variante}</span>}
+                {item.sku && <span className="text-graphite-400">. SKU {item.sku}</span>}
                 <button
                   type="button"
                   onClick={() => removeItem(item.slug)}
@@ -130,7 +132,7 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
             required
             className="w-full rounded-xl border border-mist-300 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-brand"
           >
-            <option value="">Seleccioná una provincia</option>
+            <option value="">Selecciona una provincia</option>
             {PROVINCIAS.map((p) => (
               <option key={p} value={p}>{p}</option>
             ))}
@@ -148,7 +150,7 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
             required
             className="w-full rounded-xl border border-mist-300 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-brand"
           >
-            <option value="">Seleccioná una opción</option>
+            <option value="">Selecciona una opcion</option>
             {TIPOS_LABORATORIO.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
@@ -156,14 +158,14 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-medium text-graphite-700">Interés principal</label>
+          <label className="mb-1.5 block text-sm font-medium text-graphite-700">Interes principal</label>
           <select
             name="interes_principal"
             required
             defaultValue={interesInicial || ""}
             className="w-full rounded-xl border border-mist-300 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-brand"
           >
-            <option value="">Seleccioná una opción</option>
+            <option value="">Selecciona una opcion</option>
             {INTERESES.map((i) => (
               <option key={i} value={i}>{i}</option>
             ))}
@@ -175,7 +177,7 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
           <textarea
             name="mensaje"
             rows={4}
-            placeholder="Contanos qué necesita tu laboratorio..."
+            placeholder="Contanos que necesita tu laboratorio..."
             className="w-full rounded-xl border border-mist-300 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-brand"
           />
         </div>
@@ -183,7 +185,7 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
 
       {status === "error" && (
         <p className="mt-4 text-sm text-red-600">
-          Ocurrió un error al enviar tu consulta. Probá de nuevo o escribinos por WhatsApp.
+          Ocurrio un error al enviar tu consulta. Proba de nuevo o escribinos por WhatsApp.
         </p>
       )}
 

@@ -21,6 +21,18 @@ export interface Marca {
   orden: number;
 }
 
+export type TipoCatalogo = "producto" | "linea" | "coleccion";
+
+/** Una combinacion especifica de variante (ej. tono + tipo + translucidez + medida) con su propio SKU. */
+export interface VarianteMatriz {
+  etiqueta: string;
+  sku?: string;
+  tipo?: string;
+  translucidez?: string;
+  tono?: string;
+  medida?: string;
+}
+
 export interface Producto {
   id: number;
   slug: string;
@@ -36,6 +48,9 @@ export interface Producto {
   beneficios: string[];
   caracteristicas: string[];
   variantes: string[];
+  sku: string | null;
+  tipo: TipoCatalogo;
+  variantes_matriz: VarianteMatriz[];
   tecnologia: Tecnologia | null;
   tipo_laboratorio: TipoLaboratorio[];
   tags: string[];
