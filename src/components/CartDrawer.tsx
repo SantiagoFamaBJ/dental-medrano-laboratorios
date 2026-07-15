@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart, X, Trash2 } from "lucide-react";
-import { useCart } from "@/lib/cart-context";
+import { useCart, cartItemId } from "@/lib/cart-context";
 import { publicImageUrl } from "@/lib/supabase";
 import { buildWhatsAppUrl, mensajeConsultaCarrito } from "@/lib/whatsapp";
 import WhatsAppIcon from "./WhatsAppIcon";
@@ -56,8 +56,9 @@ export default function CartDrawer({ open, onClose, whatsappNumber }: CartDrawer
             <ul className="space-y-4">
               {items.map((item) => {
                 const imageUrl = publicImageUrl(item.imagen);
+                const id = cartItemId(item);
                 return (
-                  <li key={item.slug} className="flex items-center gap-3">
+                  <li key={id} className="flex items-center gap-3">
                     <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-mist-200 bg-mist-100">
                       {imageUrl ? (
                         <Image src={imageUrl} alt={item.nombre} fill sizes="56px" className="object-cover" />
@@ -72,15 +73,18 @@ export default function CartDrawer({ open, onClose, whatsappNumber }: CartDrawer
                         <p className="truncate text-[11px] font-semibold uppercase tracking-wide text-brand">{item.marca}</p>
                       )}
                       <p className="truncate text-sm font-semibold text-ink">{item.nombre}</p>
+                      {item.familia && (
+                        <p className="truncate text-xs text-graphite-500">Familia: {item.familia}</p>
+                      )}
                       {item.variante && (
-                        <p className="truncate text-xs text-graphite-500">Tonalidad/medida: {item.variante}</p>
+                        <p className="truncate text-xs text-graphite-500">Tonalidad/Presentacion: {item.variante}</p>
                       )}
                       {item.sku && (
                         <p className="truncate text-xs text-graphite-400">SKU: {item.sku}</p>
                       )}
                     </div>
                     <button
-                      onClick={() => removeItem(item.slug)}
+                      onClick={() => removeItem(id)}
                       aria-label={`Quitar ${item.nombre} del carrito`}
                       className="shrink-0 rounded-full p-2 text-graphite-400 hover:bg-mist-100 hover:text-red-600"
                     >

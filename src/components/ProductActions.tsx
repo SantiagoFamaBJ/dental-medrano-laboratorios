@@ -3,18 +3,20 @@
 import { useState } from "react";
 import { ShoppingCart, Check, Trash2 } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
-import { useCart } from "@/lib/cart-context";
+import { useCart, cartItemId } from "@/lib/cart-context";
 import { buildWhatsAppUrl, mensajeConsultaProducto } from "@/lib/whatsapp";
 import type { VarianteMatriz } from "@/lib/types";
 
-const AXES = ["tipo", "translucidez", "tono", "medida"] as const;
+/** Jerarquia Linea -> Familia -> Variante -> SKU: familia siempre se elige primero. */
+const AXES = ["familia", "tipo", "translucidez", "tono", "medida"] as const;
 type Axis = (typeof AXES)[number];
 
 const AXIS_LABEL: Record<Axis, string> = {
+  familia: "Familia de producto",
   tipo: "Tipo",
   translucidez: "Translucidez",
-  tono: "Tono",
-  medida: "Medida",
+  tono: "Tonalidad",
+  medida: "Presentacion",
 };
 
 interface ProductActionsProps {
@@ -38,16 +40,14 @@ export default function ProductActions({
   variantesMatriz = [],
   whatsappNumber,
 }: ProductActionsProps) {
-  const { items, addItem, removeItem, isInCart } = useCart();
-  const itemEnCarrito = items.find((i) => i.slug === slug);
-  const enCarrito = isInCart(slug);
+  const { addItem, removeItem, isInCart } = useCart();
 
   const usaMatriz = variantesMatriz.length > 0;
   const tieneVariantesSimples = !usaMatriz && variantes.length > 0;
 
-  const [varianteSimple, setVarianteSimple] = useState(itemEnCarrito?.variante || "");
+  const [varianteSimple, setVarianteSimple] = useState("");
 
-  const axesPresentes = AXES.filter((a) => variantesMatriz.some((v) => v[a]));
+  const axesPresentes = AXES.filter((a) => variantesMatriz.some((v) => v.atributos?.[a]));
   const esListaSimpleDeEtiquetas = usaMatriz && axesPresentes.length === 0;
   const [selecciones, setSelecciones] = useState<Partial<Record<Axis, string>>>({});
   const [etiquetaElegida, setEtiquetaElegida] = useState("");
@@ -56,9 +56,9 @@ export default function ProductActions({
     const idx = AXES.indexOf(axis);
     const previas = AXES.slice(0, idx).filter((a) => axesPresentes.includes(a));
     const compatibles = variantesMatriz.filter((v) =>
-      previas.every((a) => !selecciones[a] || v[a] === selecciones[a])
+      previas.every((a) => !selecciones[a] || v.atributos?.[a] === selecciones[a])
     );
-    return Array.from(new Set(compatibles.map((v) => v[axis]).filter(Boolean))) as string[];
+    return Array.from(new Set(compatibles.map((v) => v.atributos?.[axis]).filter(Boolean))) as string[];
   }
 
   function handleAxisChange(axis: Axis, value: string) {
@@ -74,35 +74,53 @@ export default function ProductActions({
   }
 
   const coincidencias = variantesMatriz.filter((v) =>
-    axesPresentes.every((a) => !selecciones[a] || v[a] === selecciones[a])
+    axesPresentes.every((a) => !selecciones[a] || v.atributos?.[a] === selecciones[a])
   );
   const seleccionCompleta = esListaSimpleDeEtiquetas
     ? Boolean(etiquetaElegida)
-    : axesPresentes.every((a) => selecciones[a]);
+    : axesPresentes.length > 0 && axesPresentes.every((a) => selecciones[a]);
   const matchMatriz: VarianteMatriz | null = esListaSimpleDeEtiquetas
     ? variantesMatriz.find((v) => v.etiqueta === etiquetaElegida) || null
     : seleccionCompleta && coincidencias.length >= 1
       ? coincidencias[0]
       : null;
 
+  const familiaActiva = matchMatriz?.atributos?.familia;
   const varianteActiva = usaMatriz ? matchMatriz?.etiqueta : varianteSimple || undefined;
   const skuActivo = usaMatriz ? matchMatriz?.sku : sku || undefined;
-  const puedeAccionar = usaMatriz ? Boolean(matchMatriz) : true;
+
+  // La seleccion de variante es opcional para consultar (se puede preguntar por la linea/familia
+  // en general), pero obligatoria para agregar un SKU exacto al carrito.
+  const puedeConsultar = true;
+  const puedeAgregarCarrito = usaMatriz ? Boolean(matchMatriz) : true;
+
+  const idActivo = cartItemId({ slug, sku: skuActivo, variante: varianteActiva });
+  const enCarritoEstaVariante = isInCart(idActivo);
 
   const whatsappUrl = buildWhatsAppUrl(
-    mensajeConsultaProducto(nombre, varianteActiva, skuActivo || undefined),
+    mensajeConsultaProducto(nombre, {
+      familia: familiaActiva,
+      variante: varianteActiva,
+      sku: skuActivo || undefined,
+    }),
     whatsappNumber
   );
 
   function handleAgregar() {
+    if (!puedeAgregarCarrito) return;
     addItem({
       slug,
       nombre,
       marca,
       imagen,
+      familia: familiaActiva,
       variante: varianteActiva,
       sku: skuActivo || undefined,
     });
+  }
+
+  function handleQuitar() {
+    removeItem(idActivo);
   }
 
   return (
@@ -134,6 +152,7 @@ export default function ProductActions({
 
       {usaMatriz && !esListaSimpleDeEtiquetas && (
         <div className="space-y-3">
+          <p className="text-xs font-medium uppercase tracking-wide text-graphite-500">Elegi el producto</p>
           {axesPresentes.map((axis) => (
             <div key={axis}>
               <label className="mb-1.5 block text-sm font-medium text-graphite-700">
@@ -160,7 +179,8 @@ export default function ProductActions({
           )}
           {!seleccionCompleta && (
             <p className="text-xs text-graphite-500">
-              Elegi todas las opciones para ver el SKU y poder consultar o agregar al carrito.
+              Podes consultar por la linea general, o elegir todas las opciones para ver el SKU exacto y agregarlo
+              al carrito.
             </p>
           )}
           {seleccionCompleta && !matchMatriz && (
@@ -196,37 +216,29 @@ export default function ProductActions({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <a
-          href={puedeAccionar ? whatsappUrl : undefined}
+          href={puedeConsultar ? whatsappUrl : undefined}
           target="_blank"
           rel="noopener noreferrer"
-          aria-disabled={!puedeAccionar}
-          onClick={(e) => {
-            if (!puedeAccionar) e.preventDefault();
-          }}
-          className={`inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold text-white shadow-soft transition-transform ${
-            puedeAccionar
-              ? "bg-brand hover:scale-[1.02] hover:bg-brand-dark"
-              : "cursor-not-allowed bg-mist-300"
-          }`}
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-semibold text-white shadow-soft transition-transform hover:scale-[1.02] hover:bg-brand-dark"
         >
           <WhatsAppIcon className="h-4 w-4" />
           Consultar por este producto
         </a>
         <button
           onClick={handleAgregar}
-          disabled={!puedeAccionar}
+          disabled={!puedeAgregarCarrito}
           className={`inline-flex items-center justify-center gap-2 rounded-full border px-7 py-3.5 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-            enCarrito
+            enCarritoEstaVariante
               ? "border-brand bg-brand/10 text-brand"
               : "border-mist-300 text-graphite-600 hover:border-brand/40 hover:text-brand"
           }`}
         >
-          {enCarrito ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
-          {enCarrito ? "Actualizar en el carrito" : "Agregar al carrito"}
+          {enCarritoEstaVariante ? <Check className="h-4 w-4" /> : <ShoppingCart className="h-4 w-4" />}
+          {enCarritoEstaVariante ? "Agregado al carrito" : "Agregar al carrito"}
         </button>
-        {enCarrito && (
+        {enCarritoEstaVariante && (
           <button
-            onClick={() => removeItem(slug)}
+            onClick={handleQuitar}
             className="inline-flex items-center justify-center gap-1.5 text-xs font-medium text-graphite-400 hover:text-red-600"
           >
             <Trash2 className="h-3.5 w-3.5" />

@@ -4,7 +4,7 @@ import { useEffect, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import type { Categoria, Marca, Producto, VarianteMatriz } from "@/lib/types";
+import type { Categoria, Marca, Producto, VarianteAtributos, VarianteMatriz } from "@/lib/types";
 import ImageUploader from "@/components/ImageUploader";
 
 interface ProductFormProps {
@@ -40,7 +40,12 @@ const TIPOS_CATALOGO = [
 ];
 
 function nuevaVariante(): VarianteMatriz {
-  return { etiqueta: "", sku: "", tipo: "", translucidez: "", tono: "", medida: "" };
+  return {
+    etiqueta: "",
+    sku: "",
+    baseCode: "",
+    atributos: { familia: "", tipo: "", translucidez: "", tono: "", medida: "" },
+  };
 }
 
 export default function ProductForm({ producto }: ProductFormProps) {
@@ -118,8 +123,14 @@ export default function ProductForm({ producto }: ProductFormProps) {
     setTipoLab((prev) => (prev.includes(tipo) ? prev.filter((t) => t !== tipo) : [...prev, tipo]));
   }
 
-  function actualizarVariante(idx: number, campo: keyof VarianteMatriz, valor: string) {
+  function actualizarVariante(idx: number, campo: "etiqueta" | "sku" | "baseCode", valor: string) {
     setVariantesMatriz((prev) => prev.map((v, i) => (i === idx ? { ...v, [campo]: valor } : v)));
+  }
+
+  function actualizarAtributo(idx: number, campo: keyof VarianteAtributos, valor: string) {
+    setVariantesMatriz((prev) =>
+      prev.map((v, i) => (i === idx ? { ...v, atributos: { ...v.atributos, [campo]: valor } } : v))
+    );
   }
 
   function eliminarVariante(idx: number) {
@@ -249,7 +260,7 @@ export default function ProductForm({ producto }: ProductFormProps) {
           <div>
             <div className="mb-2 flex items-center justify-between">
               <label className="block text-sm font-medium text-graphite-700">
-                Variantes con SKU propio (tipo / translucidez / tono / medida)
+                Variantes con SKU propio (Familia / Tipo / Translucidez / Tonalidad / Presentacion)
               </label>
               <button
                 type="button"
@@ -260,8 +271,10 @@ export default function ProductForm({ producto }: ProductFormProps) {
               </button>
             </div>
             <p className="mb-3 text-xs text-graphite-500">
-              Usa esto solo si el producto tiene combinaciones reales con SKU propio (ej. BRILLIANT Crios: tono +
-              tipo + translucidez + medida). Deja vacio el campo que no aplique.
+              Usa esto solo si el producto tiene combinaciones reales con SKU propio (jerarquia Linea -&gt; Familia
+              -&gt; Variante -&gt; SKU). Ej. Noritake EX-3: familia &quot;Body N&quot;, tonalidad &quot;A1&quot;,
+              presentacion &quot;50g&quot;, SKU &quot;033512-A1000&quot;. Cargá solo codigos reales del catalogo de
+              Dental Medrano, nunca inventados. Deja vacio el campo que no aplique.
             </p>
             {variantesMatriz.length === 0 && (
               <p className="text-xs text-graphite-400">No hay variantes con SKU cargadas.</p>
@@ -271,20 +284,42 @@ export default function ProductForm({ producto }: ProductFormProps) {
                 <div key={idx} className="rounded-xl border border-mist-200 p-3">
                   <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                     <MiniField
-                      placeholder="Etiqueta (ej: A3 . Anterior . HT . 14mm)"
+                      placeholder="Etiqueta (ej: Body N . A1 . 50g)"
                       value={v.etiqueta}
                       onChange={(val) => actualizarVariante(idx, "etiqueta", val)}
                       className="col-span-2 sm:col-span-3"
                     />
-                    <MiniField placeholder="SKU" value={v.sku || ""} onChange={(val) => actualizarVariante(idx, "sku", val)} />
-                    <MiniField placeholder="Tipo" value={v.tipo || ""} onChange={(val) => actualizarVariante(idx, "tipo", val)} />
+                    <MiniField placeholder="SKU exacto" value={v.sku || ""} onChange={(val) => actualizarVariante(idx, "sku", val)} />
+                    <MiniField
+                      placeholder="Codigo base (ej: 033512)"
+                      value={v.baseCode || ""}
+                      onChange={(val) => actualizarVariante(idx, "baseCode", val)}
+                    />
+                    <MiniField
+                      placeholder="Familia (ej: Body N)"
+                      value={v.atributos?.familia || ""}
+                      onChange={(val) => actualizarAtributo(idx, "familia", val)}
+                    />
+                    <MiniField
+                      placeholder="Tipo"
+                      value={v.atributos?.tipo || ""}
+                      onChange={(val) => actualizarAtributo(idx, "tipo", val)}
+                    />
                     <MiniField
                       placeholder="Translucidez"
-                      value={v.translucidez || ""}
-                      onChange={(val) => actualizarVariante(idx, "translucidez", val)}
+                      value={v.atributos?.translucidez || ""}
+                      onChange={(val) => actualizarAtributo(idx, "translucidez", val)}
                     />
-                    <MiniField placeholder="Tono" value={v.tono || ""} onChange={(val) => actualizarVariante(idx, "tono", val)} />
-                    <MiniField placeholder="Medida" value={v.medida || ""} onChange={(val) => actualizarVariante(idx, "medida", val)} />
+                    <MiniField
+                      placeholder="Tonalidad"
+                      value={v.atributos?.tono || ""}
+                      onChange={(val) => actualizarAtributo(idx, "tono", val)}
+                    />
+                    <MiniField
+                      placeholder="Presentacion (ej: 50g)"
+                      value={v.atributos?.medida || ""}
+                      onChange={(val) => actualizarAtributo(idx, "medida", val)}
+                    />
                   </div>
                   <button
                     type="button"

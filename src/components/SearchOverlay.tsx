@@ -39,15 +39,36 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
     const timeout = setTimeout(async () => {
       setLoading(true);
       const term = `%${query.trim()}%`;
+
+      // Busca tambien por SKU y por el contenido de variantes_matriz (sku exacto, baseCode,
+      // familia, tono, medida) para que un vendedor pueda encontrar un producto tipeando un
+      // codigo o una tonalidad, no solo el nombre.
       const { data, error } = await supabase
         .from("labs_products")
         .select("*")
         .eq("activo", true)
         .or(
-          `nombre.ilike.${term},marca.ilike.${term},subcategoria.ilike.${term},tecnologia.ilike.${term},descripcion_corta.ilike.${term}`
+          `nombre.ilike.${term},marca.ilike.${term},subcategoria.ilike.${term},tecnologia.ilike.${term},descripcion_corta.ilike.${term},sku.ilike.${term},variantes_matriz::text.ilike.${term}`
         )
         .limit(12);
-      if (!error && data) setResults(data as Producto[]);
+
+      if (!error && data) {
+        setResults(data as Producto[]);
+        setLoading(false);
+        return;
+      }
+
+      // Fallback defensivo por si el cast dentro de .or() no esta soportado: repetimos la
+      // busqueda basica (sin variantes_matriz) para no dejar el buscador roto.
+      const { data: dataBasica } = await supabase
+        .from("labs_products")
+        .select("*")
+        .eq("activo", true)
+        .or(
+          `nombre.ilike.${term},marca.ilike.${term},subcategoria.ilike.${term},tecnologia.ilike.${term},descripcion_corta.ilike.${term},sku.ilike.${term}`
+        )
+        .limit(12);
+      setResults((dataBasica as Producto[]) || []);
       setLoading(false);
     }, 250);
     return () => clearTimeout(timeout);
@@ -95,6 +116,7 @@ export default function SearchOverlay({ open, onClose }: SearchOverlayProps) {
                 <p className="text-sm font-semibold text-ink">{p.nombre}</p>
                 <p className="text-xs text-graphite-500">
                   {p.marca} · {p.subcategoria}
+                  {p.sku ? ` · SKU ${p.sku}` : ""}
                 </p>
               </div>
               <span className="text-xs font-medium text-brand">Ver producto</span>

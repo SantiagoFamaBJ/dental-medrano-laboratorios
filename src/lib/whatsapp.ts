@@ -11,10 +11,27 @@ export function buildWhatsAppUrl(mensaje: string, numero: string = WHATSAPP_NUMB
   return `https://wa.me/${numero}?text=${texto}`;
 }
 
-export function mensajeConsultaProducto(nombreProducto: string, variante?: string, sku?: string) {
-  const detalle = variante ? ` (${variante})` : "";
-  const skuTxt = sku ? `\nSKU: ${sku}` : "";
-  return `Hola, quiero consultar por ${nombreProducto}${detalle}.${skuTxt}`;
+interface ConsultaProductoOpts {
+  /** Familia dentro de la linea (ej. "Body N"), si el producto se organiza por familias. */
+  familia?: string;
+  /** Tonalidad / presentacion exacta elegida. */
+  variante?: string;
+  /** SKU exacto de la variante elegida, o SKU del producto si no tiene variantes. */
+  sku?: string;
+}
+
+/**
+ * Mensaje de consulta para un solo producto. nombreProducto funciona como la "linea"
+ * (ej. "Noritake EX-3"); familia/variante/SKU se agregan solo si ya fueron elegidos.
+ */
+export function mensajeConsultaProducto(nombreProducto: string, opts: ConsultaProductoOpts = {}) {
+  const { familia, variante, sku } = opts;
+  const detalles: string[] = [];
+  if (familia) detalles.push(`Familia: ${familia}`);
+  if (variante) detalles.push(`Tonalidad/Presentacion: ${variante}`);
+  if (sku) detalles.push(`SKU: ${sku}`);
+  const detalle = detalles.length > 0 ? `\n${detalles.join("\n")}` : "";
+  return `Hola, quiero consultar por ${nombreProducto}.${detalle}`;
 }
 
 export function mensajeAsesorGeneral() {
@@ -25,15 +42,22 @@ export function mensajeTipoLaboratorio(tipo: string) {
   return `Hola, tengo un laboratorio ${tipo} y quiero recibir asesoramiento sobre productos de Dental Medrano.`;
 }
 
-export function mensajeConsultaCarrito(
-  items: { nombre: string; marca?: string | null; variante?: string; sku?: string }[]
-) {
+interface ItemConsultaCarrito {
+  nombre: string;
+  marca?: string | null;
+  familia?: string;
+  variante?: string;
+  sku?: string;
+}
+
+export function mensajeConsultaCarrito(items: ItemConsultaCarrito[]) {
   const lista = items
     .map((i) => {
       const marca = i.marca ? ` (${i.marca})` : "";
-      const variante = i.variante ? ` — Tonalidad/medida: ${i.variante}` : "";
+      const familia = i.familia ? ` — Familia: ${i.familia}` : "";
+      const variante = i.variante ? ` — Tonalidad/Presentacion: ${i.variante}` : "";
       const sku = i.sku ? ` — SKU: ${i.sku}` : "";
-      return `- ${i.nombre}${marca}${variante}${sku}`;
+      return `- ${i.nombre}${marca}${familia}${variante}${sku}`;
     })
     .join("\n");
   return `Hola, quiero consultar por estos productos:\n${lista}`;

@@ -3,7 +3,7 @@
 import { useState, FormEvent } from "react";
 import { CheckCircle2, Loader2, X } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useCart } from "@/lib/cart-context";
+import { useCart, cartItemId } from "@/lib/cart-context";
 
 const TIPOS_LABORATORIO = ["Tradicional", "Mixto", "Digital"];
 const INTERESES = [
@@ -42,9 +42,10 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
         ? `Productos consultados:\n${items
             .map((i) => {
               const marca = i.marca ? ` (${i.marca})` : "";
-              const variante = i.variante ? ` — Tonalidad/medida: ${i.variante}` : "";
+              const familia = i.familia ? ` — Familia: ${i.familia}` : "";
+              const variante = i.variante ? ` — Tonalidad/Presentacion: ${i.variante}` : "";
               const sku = i.sku ? ` — SKU: ${i.sku}` : "";
-              return `- ${i.nombre}${marca}${variante}${sku}`;
+              return `- ${i.nombre}${marca}${familia}${variante}${sku}`;
             })
             .join("\n")}`
         : "";
@@ -101,15 +102,16 @@ export default function ContactForm({ interesInicial }: ContactFormProps) {
           <ul className="flex flex-wrap gap-2">
             {items.map((item) => (
               <li
-                key={item.slug}
+                key={cartItemId(item)}
                 className="flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-graphite-700 shadow-soft"
               >
                 {item.nombre}
+                {item.familia && <span className="text-graphite-400">. {item.familia}</span>}
                 {item.variante && <span className="text-graphite-400">. {item.variante}</span>}
                 {item.sku && <span className="text-graphite-400">. SKU {item.sku}</span>}
                 <button
                   type="button"
-                  onClick={() => removeItem(item.slug)}
+                  onClick={() => removeItem(cartItemId(item))}
                   aria-label={`Quitar ${item.nombre}`}
                   className="text-graphite-400 hover:text-red-600"
                 >

@@ -23,14 +23,23 @@ export interface Marca {
 
 export type TipoCatalogo = "producto" | "linea" | "coleccion";
 
-/** Una combinacion especifica de variante (ej. tono + tipo + translucidez + medida) con su propio SKU. */
-export interface VarianteMatriz {
-  etiqueta: string;
-  sku?: string;
+/** Atributos que describen una variante dentro de una familia (linea -> familia -> variante -> SKU). */
+export interface VarianteAtributos {
+  /** Familia dentro de una linea (ej. "Body N", "Enamel", "Opaco en pasta" dentro de Noritake EX-3). */
+  familia?: string;
   tipo?: string;
   translucidez?: string;
   tono?: string;
   medida?: string;
+}
+
+/** Una combinacion especifica y comprable (con SKU propio) dentro de una linea/familia de productos. */
+export interface VarianteMatriz {
+  etiqueta: string;
+  sku?: string;
+  /** Codigo base compartido por toda la familia/tonalidad antes del sufijo exacto (ej. "033512" en "033512-A1000"). */
+  baseCode?: string;
+  atributos?: VarianteAtributos;
 }
 
 export interface Producto {

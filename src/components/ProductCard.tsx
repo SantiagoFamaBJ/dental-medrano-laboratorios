@@ -5,7 +5,7 @@ import Image from "next/image";
 import { ArrowUpRight, ShoppingCart, Check } from "lucide-react";
 import type { Producto } from "@/lib/types";
 import { publicImageUrl } from "@/lib/supabase";
-import { useCart } from "@/lib/cart-context";
+import { useCart, cartItemId } from "@/lib/cart-context";
 
 const BADGE_STYLES: Record<string, string> = {
   Nuevo: "bg-cyan-accent/15 text-cyan-accent",
@@ -18,7 +18,7 @@ const BADGE_STYLES: Record<string, string> = {
 export default function ProductCard({ producto }: { producto: Producto }) {
   const imageUrl = publicImageUrl(producto.imagen);
   const { toggleItem, isInCart } = useCart();
-  const enCarrito = isInCart(producto.slug);
+  const enCarrito = isInCart(cartItemId({ slug: producto.slug }));
 
   function handleToggleCart(e: React.MouseEvent) {
     e.preventDefault();
