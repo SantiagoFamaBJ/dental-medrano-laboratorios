@@ -44,6 +44,7 @@ function nuevaVariante(): VarianteMatriz {
     etiqueta: "",
     sku: "",
     baseCode: "",
+    imagen: null,
     atributos: { familia: "", tipo: "", translucidez: "", tono: "", medida: "" },
   };
 }
@@ -125,6 +126,10 @@ export default function ProductForm({ producto }: ProductFormProps) {
 
   function actualizarVariante(idx: number, campo: "etiqueta" | "sku" | "baseCode", valor: string) {
     setVariantesMatriz((prev) => prev.map((v, i) => (i === idx ? { ...v, [campo]: valor } : v)));
+  }
+
+  function actualizarImagenVariante(idx: number, valor: string | null) {
+    setVariantesMatriz((prev) => prev.map((v, i) => (i === idx ? { ...v, imagen: valor } : v)));
   }
 
   function actualizarAtributo(idx: number, campo: keyof VarianteAtributos, valor: string) {
@@ -274,7 +279,11 @@ export default function ProductForm({ producto }: ProductFormProps) {
               Usa esto solo si el producto tiene combinaciones reales con SKU propio (jerarquia Linea -&gt; Familia
               -&gt; Variante -&gt; SKU). Ej. Noritake EX-3: familia &quot;Body N&quot;, tonalidad &quot;A1&quot;,
               presentacion &quot;50g&quot;, SKU &quot;033512-A1000&quot;. Cargá solo codigos reales del catalogo de
-              Dental Medrano, nunca inventados. Deja vacio el campo que no aplique.
+              Dental Medrano, nunca inventados. Deja vacio el campo que no aplique. Si ademas cargas una foto para
+              una variante (por ejemplo, cada pulidor Kenda o cada pieza de mano/microarenadora tiene su propia
+              forma), esa foto reemplaza a la foto principal en la ficha cuando el cliente elige esa variante. Si no
+              cargas foto propia (como en bloques o cerámicas Noritake, donde todas las tonalidades se ven igual), la
+              ficha sigue mostrando siempre la foto principal.
             </p>
             {variantesMatriz.length === 0 && (
               <p className="text-xs text-graphite-400">No hay variantes con SKU cargadas.</p>
@@ -282,44 +291,54 @@ export default function ProductForm({ producto }: ProductFormProps) {
             <div className="space-y-3">
               {variantesMatriz.map((v, idx) => (
                 <div key={idx} className="rounded-xl border border-mist-200 p-3">
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    <MiniField
-                      placeholder="Etiqueta (ej: Body N . A1 . 50g)"
-                      value={v.etiqueta}
-                      onChange={(val) => actualizarVariante(idx, "etiqueta", val)}
-                      className="col-span-2 sm:col-span-3"
-                    />
-                    <MiniField placeholder="SKU exacto" value={v.sku || ""} onChange={(val) => actualizarVariante(idx, "sku", val)} />
-                    <MiniField
-                      placeholder="Codigo base (ej: 033512)"
-                      value={v.baseCode || ""}
-                      onChange={(val) => actualizarVariante(idx, "baseCode", val)}
-                    />
-                    <MiniField
-                      placeholder="Familia (ej: Body N)"
-                      value={v.atributos?.familia || ""}
-                      onChange={(val) => actualizarAtributo(idx, "familia", val)}
-                    />
-                    <MiniField
-                      placeholder="Tipo"
-                      value={v.atributos?.tipo || ""}
-                      onChange={(val) => actualizarAtributo(idx, "tipo", val)}
-                    />
-                    <MiniField
-                      placeholder="Translucidez"
-                      value={v.atributos?.translucidez || ""}
-                      onChange={(val) => actualizarAtributo(idx, "translucidez", val)}
-                    />
-                    <MiniField
-                      placeholder="Tonalidad"
-                      value={v.atributos?.tono || ""}
-                      onChange={(val) => actualizarAtributo(idx, "tono", val)}
-                    />
-                    <MiniField
-                      placeholder="Presentacion (ej: 50g)"
-                      value={v.atributos?.medida || ""}
-                      onChange={(val) => actualizarAtributo(idx, "medida", val)}
-                    />
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="shrink-0">
+                      <ImageUploader
+                        label="Foto de esta variante (opcional)"
+                        value={v.imagen || null}
+                        onChange={(val) => actualizarImagenVariante(idx, val)}
+                        folder="productos/variantes"
+                      />
+                    </div>
+                    <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-3">
+                      <MiniField
+                        placeholder="Etiqueta (ej: Body N . A1 . 50g)"
+                        value={v.etiqueta}
+                        onChange={(val) => actualizarVariante(idx, "etiqueta", val)}
+                        className="col-span-2 sm:col-span-3"
+                      />
+                      <MiniField placeholder="SKU exacto" value={v.sku || ""} onChange={(val) => actualizarVariante(idx, "sku", val)} />
+                      <MiniField
+                        placeholder="Codigo base (ej: 033512)"
+                        value={v.baseCode || ""}
+                        onChange={(val) => actualizarVariante(idx, "baseCode", val)}
+                      />
+                      <MiniField
+                        placeholder="Familia (ej: Body N)"
+                        value={v.atributos?.familia || ""}
+                        onChange={(val) => actualizarAtributo(idx, "familia", val)}
+                      />
+                      <MiniField
+                        placeholder="Tipo"
+                        value={v.atributos?.tipo || ""}
+                        onChange={(val) => actualizarAtributo(idx, "tipo", val)}
+                      />
+                      <MiniField
+                        placeholder="Translucidez"
+                        value={v.atributos?.translucidez || ""}
+                        onChange={(val) => actualizarAtributo(idx, "translucidez", val)}
+                      />
+                      <MiniField
+                        placeholder="Tonalidad"
+                        value={v.atributos?.tono || ""}
+                        onChange={(val) => actualizarAtributo(idx, "tono", val)}
+                      />
+                      <MiniField
+                        placeholder="Presentacion (ej: 50g)"
+                        value={v.atributos?.medida || ""}
+                        onChange={(val) => actualizarAtributo(idx, "medida", val)}
+                      />
+                    </div>
                   </div>
                   <button
                     type="button"

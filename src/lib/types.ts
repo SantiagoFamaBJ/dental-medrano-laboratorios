@@ -40,6 +40,8 @@ export interface VarianteMatriz {
   /** Codigo base compartido por toda la familia/tonalidad antes del sufijo exacto (ej. "033512" en "033512-A1000"). */
   baseCode?: string;
   atributos?: VarianteAtributos;
+  /** Foto propia de esta variante (ruta en el bucket de imagenes). Si no tiene, se usa la foto principal del producto. */
+  imagen?: string | null;
 }
 
 export interface Producto {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ShoppingCart, Check, Trash2 } from "lucide-react";
 import WhatsAppIcon from "./WhatsAppIcon";
 import { useCart, cartItemId } from "@/lib/cart-context";
@@ -28,6 +28,9 @@ interface ProductActionsProps {
   variantes?: string[];
   variantesMatriz?: VarianteMatriz[];
   whatsappNumber?: string;
+  /** Se llama con la foto propia de la variante elegida (o null si no tiene / no hay seleccion),
+   * para que el componente que muestra la imagen principal la pueda reemplazar. */
+  onImagenChange?: (imagen: string | null) => void;
 }
 
 export default function ProductActions({
@@ -39,6 +42,7 @@ export default function ProductActions({
   variantes = [],
   variantesMatriz = [],
   whatsappNumber,
+  onImagenChange,
 }: ProductActionsProps) {
   const { addItem, removeItem, isInCart } = useCart();
 
@@ -88,6 +92,12 @@ export default function ProductActions({
   const familiaActiva = matchMatriz?.atributos?.familia;
   const varianteActiva = usaMatriz ? matchMatriz?.etiqueta : varianteSimple || undefined;
   const skuActivo = usaMatriz ? matchMatriz?.sku : sku || undefined;
+  const imagenVarianteActiva = matchMatriz?.imagen ?? null;
+
+  useEffect(() => {
+    onImagenChange?.(imagenVarianteActiva);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imagenVarianteActiva]);
 
   // La seleccion de variante es opcional para consultar (se puede preguntar por la linea/familia
   // en general), pero obligatoria para agregar un SKU exacto al carrito.
@@ -112,7 +122,7 @@ export default function ProductActions({
       slug,
       nombre,
       marca,
-      imagen,
+      imagen: imagenVarianteActiva || imagen,
       familia: familiaActiva,
       variante: varianteActiva,
       sku: skuActivo || undefined,
