@@ -38,7 +38,7 @@ export default function ProductCard({ producto }: { producto: Producto }) {
             alt={producto.nombre}
             fill
             sizes="(max-width: 768px) 100vw, 320px"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-contain p-4 transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-grid-light bg-mist-100">

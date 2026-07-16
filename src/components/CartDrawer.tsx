@@ -61,7 +61,7 @@ export default function CartDrawer({ open, onClose, whatsappNumber }: CartDrawer
                   <li key={id} className="flex items-center gap-3">
                     <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-mist-200 bg-mist-100">
                       {imageUrl ? (
-                        <Image src={imageUrl} alt={item.nombre} fill sizes="56px" className="object-cover" />
+                        <Image src={imageUrl} alt={item.nombre} fill sizes="56px" className="object-contain p-1" />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
                           <span className="font-heading text-xs font-bold text-mist-300">DM</span>

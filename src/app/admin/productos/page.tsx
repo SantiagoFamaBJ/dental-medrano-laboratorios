@@ -86,7 +86,7 @@ export default function AdminProductosPage() {
                       <Link href={`/admin/productos/${p.id}`} className="flex items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-mist-100">
                           {img ? (
-                            <Image src={img} alt={p.nombre} width={40} height={40} className="h-full w-full object-cover" />
+                            <Image src={img} alt={p.nombre} width={40} height={40} className="h-full w-full object-contain p-0.5" />
                           ) : (
                             <span className="text-[10px] font-bold text-mist-300">DM</span>
                           )}

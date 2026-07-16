@@ -86,7 +86,7 @@ export default async function ProductoPage({ params }: { params: { slug: string 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
           <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-mist-200 bg-mist-50">
             {imageUrl ? (
-              <Image src={imageUrl} alt={producto.nombre} fill sizes="(max-width: 1024px) 100vw, 560px" className="object-cover" priority />
+              <Image src={imageUrl} alt={producto.nombre} fill sizes="(max-width: 1024px) 100vw, 560px" className="object-contain p-8" priority />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-grid-light">
                 <span className="font-heading text-5xl font-bold text-mist-300">DM</span>

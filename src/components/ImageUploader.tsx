@@ -44,7 +44,7 @@ export default function ImageUploader({ label, value, onChange, folder = "produc
       <div className="flex items-center gap-4">
         <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-mist-300 bg-mist-100">
           {previewUrl ? (
-            <Image src={previewUrl} alt={label} width={96} height={96} className="h-full w-full object-cover" />
+            <Image src={previewUrl} alt={label} width={96} height={96} className="h-full w-full object-contain p-1" />
           ) : (
             <Upload className="h-5 w-5 text-graphite-500" />
           )}
