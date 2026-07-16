@@ -84,7 +84,7 @@ export default function AdminProductosPage() {
                   <tr key={p.id} className="border-b border-mist-100 last:border-0 hover:bg-mist-50">
                     <td className="px-5 py-3">
                       <Link href={`/admin/productos/${p.id}`} className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-mist-100">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-mist-200 bg-white">
                           {img ? (
                             <Image src={img} alt={p.nombre} width={40} height={40} className="h-full w-full object-contain p-0.5" />
                           ) : (

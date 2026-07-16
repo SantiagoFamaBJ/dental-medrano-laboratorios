@@ -42,7 +42,7 @@ export default function ImageUploader({ label, value, onChange, folder = "produc
     <div>
       <p className="mb-1.5 text-sm font-medium text-graphite-700">{label}</p>
       <div className="flex items-center gap-4">
-        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-mist-300 bg-mist-100">
+        <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-mist-300 bg-white">
           {previewUrl ? (
             <Image src={previewUrl} alt={label} width={96} height={96} className="h-full w-full object-contain p-1" />
           ) : (

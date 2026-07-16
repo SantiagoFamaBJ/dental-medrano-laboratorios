@@ -59,7 +59,7 @@ export default function CartDrawer({ open, onClose, whatsappNumber }: CartDrawer
                 const id = cartItemId(item);
                 return (
                   <li key={id} className="flex items-center gap-3">
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-mist-200 bg-mist-100">
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-mist-200 bg-white">
                       {imageUrl ? (
                         <Image src={imageUrl} alt={item.nombre} fill sizes="56px" className="object-contain p-1" />
                       ) : (
