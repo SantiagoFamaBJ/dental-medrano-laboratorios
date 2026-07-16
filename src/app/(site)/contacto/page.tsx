@@ -11,6 +11,9 @@ export const metadata: Metadata = {
     "Contanos cómo trabaja tu laboratorio y te ayudamos a encontrar materiales, tecnología y soluciones para tu flujo de trabajo.",
 };
 
+// Revalida cada 30s para reflejar cambios cargados en /admin sin necesitar un deploy manual.
+export const revalidate = 30;
+
 export default async function ContactoPage() {
   const content = await getSiteContent();
   const t = (key: keyof typeof DEFAULT_SITE_CONTENT) => content[key] ?? DEFAULT_SITE_CONTENT[key] ?? "";

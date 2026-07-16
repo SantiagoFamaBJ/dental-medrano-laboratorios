@@ -10,6 +10,10 @@ import Highlighted from "@/components/Highlighted";
 import { getCategorias, getMarcas } from "@/lib/data";
 import { getSiteContent, DEFAULT_SITE_CONTENT } from "@/lib/site-content";
 
+// Revalida cada 30s para que los cambios cargados en /admin se vean en la home sin necesitar
+// un deploy manual.
+export const revalidate = 30;
+
 export default async function HomePage() {
   const [categorias, marcas, content] = await Promise.all([getCategorias(), getMarcas(), getSiteContent()]);
   const t = (key: keyof typeof DEFAULT_SITE_CONTENT) => content[key] ?? DEFAULT_SITE_CONTENT[key] ?? "";

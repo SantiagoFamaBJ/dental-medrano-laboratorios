@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/productos" },
 };
 
+// Revalida cada 30s para reflejar cambios cargados en /admin sin necesitar un deploy manual.
+export const revalidate = 30;
+
 export default async function ProductosPage() {
   const [productos, categorias, marcas] = await Promise.all([
     getProductos(),

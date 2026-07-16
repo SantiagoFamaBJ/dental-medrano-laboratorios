@@ -11,6 +11,10 @@ import ProductGrid from "@/components/ProductGrid";
 import ProductActions from "@/components/ProductActions";
 import Reveal from "@/components/Reveal";
 
+// Revalida cada 30s para que ediciones de producto en /admin (precio, SKU, variantes, texto,
+// imagen) se vean en la ficha pública sin necesitar un deploy manual.
+export const revalidate = 30;
+
 export async function generateStaticParams() {
   const productos = await getTodosLosProductosParaBusqueda();
   return productos.map((p) => ({ slug: p.slug }));

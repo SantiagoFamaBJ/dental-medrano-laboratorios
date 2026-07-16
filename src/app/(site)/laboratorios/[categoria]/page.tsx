@@ -8,6 +8,9 @@ import ProductGrid from "@/components/ProductGrid";
 import CTASection from "@/components/CTASection";
 import Reveal from "@/components/Reveal";
 
+// Revalida cada 30s para reflejar cambios cargados en /admin sin necesitar un deploy manual.
+export const revalidate = 30;
+
 export async function generateStaticParams() {
   const categorias = await getCategorias();
   return categorias.map((c) => ({ categoria: c.slug }));

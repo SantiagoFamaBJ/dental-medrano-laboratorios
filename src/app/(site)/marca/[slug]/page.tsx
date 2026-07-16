@@ -7,6 +7,9 @@ import { publicImageUrl } from "@/lib/supabase";
 import ProductGrid from "@/components/ProductGrid";
 import CTASection from "@/components/CTASection";
 
+// Revalida cada 30s para reflejar cambios cargados en /admin sin necesitar un deploy manual.
+export const revalidate = 30;
+
 export async function generateStaticParams() {
   const marcas = await getMarcas();
   return marcas.map((m) => ({ slug: m.slug }));

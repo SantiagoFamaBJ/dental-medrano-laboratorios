@@ -7,6 +7,11 @@ import { getSiteContent, SITE_LOGO_KEY } from "@/lib/site-content";
 import { publicImageUrl } from "@/lib/supabase";
 import { resolveWhatsAppNumber } from "@/lib/whatsapp";
 
+// El header/footer leen categorías y textos del sitio desde Supabase. Sin esto, Next.js
+// cachea la respuesta indefinidamente y los cambios hechos en /admin no se ven en la web
+// hasta el próximo deploy. Con esto, se revalidan solos cada 30 segundos.
+export const revalidate = 30;
+
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const [categorias, content] = await Promise.all([getCategorias(), getSiteContent()]);
   const logoUrl = publicImageUrl(content[SITE_LOGO_KEY]);
