@@ -108,7 +108,7 @@ export default function ProductForm({ producto }: ProductFormProps) {
       setError(saveError.message);
       return;
     }
-    router.push("/admin/productos");
+    router.push("/ADMIN/productos");
     router.refresh();
   }
 
@@ -116,7 +116,7 @@ export default function ProductForm({ producto }: ProductFormProps) {
     if (!producto) return;
     if (!confirm(`Eliminar "${producto.nombre}"? Esta accion no se puede deshacer.`)) return;
     await supabase.from("labs_products").delete().eq("id", producto.id);
-    router.push("/admin/productos");
+    router.push("/ADMIN/productos");
     router.refresh();
   }
 

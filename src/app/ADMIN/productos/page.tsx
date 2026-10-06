@@ -46,7 +46,7 @@ export default function AdminProductosPage() {
           <p className="mt-1 text-sm text-graphite-500">{productos.length} productos cargados</p>
         </div>
         <Link
-          href="/admin/productos/nuevo"
+          href="/ADMIN/productos/nuevo"
           className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
         >
           <Plus className="h-4 w-4" /> Nuevo producto
@@ -83,7 +83,7 @@ export default function AdminProductosPage() {
                 return (
                   <tr key={p.id} className="border-b border-mist-100 last:border-0 hover:bg-mist-50">
                     <td className="px-5 py-3">
-                      <Link href={`/admin/productos/${p.id}`} className="flex items-center gap-3">
+                      <Link href={`/ADMIN/productos/${p.id}`} className="flex items-center gap-3">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-mist-200 bg-white">
                           {img ? (
                             <Image src={img} alt={p.nombre} width={40} height={40} className="h-full w-full object-contain p-0.5" />

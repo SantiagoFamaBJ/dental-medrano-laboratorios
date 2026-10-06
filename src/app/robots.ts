@@ -5,7 +5,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://laboratorios.dental
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      { userAgent: "*", allow: "/", disallow: ["/admin"] },
+      { userAgent: "*", allow: "/", disallow: ["/ADMIN"] },
     ],
     sitemap: `${siteUrl}/sitemap.xml`,
   };

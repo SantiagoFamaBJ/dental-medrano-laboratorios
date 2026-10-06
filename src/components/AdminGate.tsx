@@ -6,16 +6,15 @@ import { usePathname } from "next/navigation";
 import { Lock, LayoutGrid, Tags, Layers, MessageSquareText, LogOut, FileText, Palette } from "lucide-react";
 
 const STORAGE_KEY = "labs_admin_auth";
-const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "";
 
 const NAV = [
-  { href: "/admin", label: "Resumen", icon: LayoutGrid },
-  { href: "/admin/productos", label: "Productos", icon: Layers },
-  { href: "/admin/categorias", label: "Categorías", icon: Layers },
-  { href: "/admin/marcas", label: "Marcas", icon: Tags },
-  { href: "/admin/contenido", label: "Textos del sitio", icon: FileText },
-  { href: "/admin/colores", label: "Colores", icon: Palette },
-  { href: "/admin/leads", label: "Consultas", icon: MessageSquareText },
+  { href: "/ADMIN", label: "Resumen", icon: LayoutGrid },
+  { href: "/ADMIN/productos", label: "Productos", icon: Layers },
+  { href: "/ADMIN/categorias", label: "Categorías", icon: Layers },
+  { href: "/ADMIN/marcas", label: "Marcas", icon: Tags },
+  { href: "/ADMIN/contenido", label: "Textos del sitio", icon: FileText },
+  { href: "/ADMIN/colores", label: "Colores", icon: Palette },
+  { href: "/ADMIN/leads", label: "Consultas", icon: MessageSquareText },
 ];
 
 export default function AdminGate({ children }: { children: ReactNode }) {
@@ -28,9 +27,9 @@ export default function AdminGate({ children }: { children: ReactNode }) {
     setAuthed(localStorage.getItem(STORAGE_KEY) === "true");
   }, []);
 
-  function handleLogin(e: FormEvent) {
+  async function handleLogin(e: FormEvent) {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD && ADMIN_PASSWORD.length > 0) {
+    if ((await fetch("/api/admin-login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: password }) })).ok) {
       localStorage.setItem(STORAGE_KEY, "true");
       setAuthed(true);
       setError(false);

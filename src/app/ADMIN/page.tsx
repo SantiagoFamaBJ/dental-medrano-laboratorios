@@ -41,19 +41,19 @@ export default function AdminHomePage() {
 
       <div className="mt-10 flex flex-wrap gap-3">
         <Link
-          href="/admin/productos/nuevo"
+          href="/ADMIN/productos/nuevo"
           className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-dark"
         >
           <Plus className="h-4 w-4" /> Nuevo producto
         </Link>
         <Link
-          href="/admin/productos"
+          href="/ADMIN/productos"
           className="inline-flex items-center gap-2 rounded-full border border-mist-300 bg-white px-5 py-2.5 text-sm font-semibold text-graphite-700 hover:border-brand/40"
         >
           Ver catálogo completo
         </Link>
         <Link
-          href="/admin/leads"
+          href="/ADMIN/leads"
           className="inline-flex items-center gap-2 rounded-full border border-mist-300 bg-white px-5 py-2.5 text-sm font-semibold text-graphite-700 hover:border-brand/40"
         >
           Ver consultas

@@ -7,7 +7,7 @@ import ProductForm from "@/components/admin/ProductForm";
 export default function NuevoProductoPage() {
   return (
     <div>
-      <Link href="/admin/productos" className="inline-flex items-center gap-1.5 text-sm font-medium text-graphite-500 hover:text-ink">
+      <Link href="/ADMIN/productos" className="inline-flex items-center gap-1.5 text-sm font-medium text-graphite-500 hover:text-ink">
         <ArrowLeft className="h-4 w-4" /> Volver a productos
       </Link>
       <h1 className="mt-4 font-heading text-2xl font-bold text-ink">Nuevo producto</h1>
