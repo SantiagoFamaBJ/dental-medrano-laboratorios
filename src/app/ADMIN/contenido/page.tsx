@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Save, RotateCcw, CheckCircle2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 import { SITE_CONTENT_FIELDS, DEFAULT_SITE_CONTENT, SITE_LOGO_KEY, WHATSAPP_NUMBER_KEY } from "@/lib/site-content";
 import { WHATSAPP_NUMBER } from "@/lib/whatsapp";
 import ImageUploader from "@/components/ImageUploader";

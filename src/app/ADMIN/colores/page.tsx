@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { Loader2, Save, RotateCcw, CheckCircle2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 import { THEME_TOKENS } from "@/lib/theme";
 
 export default function AdminColoresPage() {

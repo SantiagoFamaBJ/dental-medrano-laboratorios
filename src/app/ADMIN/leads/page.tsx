@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, Circle } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 import type { Lead } from "@/lib/types";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import WhatsAppIcon from "@/components/WhatsAppIcon";

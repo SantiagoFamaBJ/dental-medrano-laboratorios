@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Lock, LayoutGrid, Tags, Layers, MessageSquareText, LogOut, FileText, Palette } from "lucide-react";
 
-const STORAGE_KEY = "labs_admin_auth";
+const STORAGE_KEY = "labs_admin_auth_v2";
 
 const NAV = [
   { href: "/ADMIN", label: "Resumen", icon: LayoutGrid },
@@ -41,6 +41,7 @@ export default function AdminGate({ children }: { children: ReactNode }) {
   function handleLogout() {
     localStorage.removeItem(STORAGE_KEY);
     setAuthed(false);
+    fetch("/api/admin-login", { method: "DELETE" }).catch(() => null);
   }
 
   if (authed === null) {
