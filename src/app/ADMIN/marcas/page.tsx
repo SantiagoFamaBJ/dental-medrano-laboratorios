@@ -3,7 +3,8 @@
 import { useEffect, useState, FormEvent } from "react";
 import Image from "next/image";
 import { Plus, Trash2, Loader2, Upload } from "lucide-react";
-import { supabase, publicImageUrl, LABS_IMAGES_BUCKET } from "@/lib/supabase";
+import { supabase as supabasePublico, publicImageUrl, LABS_IMAGES_BUCKET } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 import type { Marca } from "@/lib/types";
 
 function slugify(text: string) {
@@ -59,7 +60,7 @@ export default function AdminMarcasPage() {
     try {
       const ext = file.name.split(".").pop();
       const path = `marcas/${marca.slug}-${Date.now()}.${ext}`;
-      const { error } = await supabase.storage
+      const { error } = await supabasePublico.storage
         .from(LABS_IMAGES_BUCKET)
         .upload(path, file, { cacheControl: "3600", upsert: false });
       if (error) throw error;

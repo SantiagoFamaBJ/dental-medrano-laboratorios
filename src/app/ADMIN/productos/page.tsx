@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Search, EyeOff, Trash2, Loader2 } from "lucide-react";
-import { supabase, publicImageUrl } from "@/lib/supabase";
+import { publicImageUrl } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 import type { Producto } from "@/lib/types";
 
 export default function AdminProductosPage() {

@@ -3,7 +3,7 @@
 import { useEffect, useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Trash2 } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 import type { Categoria, Marca, Producto, VarianteAtributos, VarianteMatriz } from "@/lib/types";
 import ImageUploader from "@/components/ImageUploader";
 

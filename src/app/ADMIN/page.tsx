@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Layers, Tags, MessageSquareText, Plus, LucideIcon } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin as supabase } from "@/lib/supabaseAdmin";
 
 export default function AdminHomePage() {
   const [counts, setCounts] = useState({ productos: 0, marcas: 0, leads: 0, leadsPendientes: 0 });
